@@ -1152,6 +1152,12 @@
             experienceStarted = true;
             experienceStartMs = performance.now();
             startOverlay.classList.add('hidden');
+            // เล่นเพลงทันทีใน gesture context
+            const bgMusic = document.getElementById('backgroundMusic');
+            if (bgMusic) {
+                bgMusic.volume = 0.5;
+                bgMusic.play().catch(() => {});
+            }
             window.dispatchEvent(new CustomEvent('experienceStarted'));
         };
 
@@ -2081,14 +2087,19 @@
             music.volume = 0.5;
 
             window.addEventListener('experienceStarted', function () {
-                music.load();
-                music.play().then(function () {
+                // เพลงถูก play แล้วใน startExperience — แค่อัปเดต icon
+                if (!music.paused) {
                     playIcon.style.display  = 'none';
                     pauseIcon.style.display = 'block';
-                }).catch(function () {
-                    playIcon.style.display  = 'block';
-                    pauseIcon.style.display = 'none';
-                });
+                } else {
+                    music.play().then(function () {
+                        playIcon.style.display  = 'none';
+                        pauseIcon.style.display = 'block';
+                    }).catch(function () {
+                        playIcon.style.display  = 'block';
+                        pauseIcon.style.display = 'none';
+                    });
+                }
             });
 
             musicBtn.addEventListener('click', function (e) {
