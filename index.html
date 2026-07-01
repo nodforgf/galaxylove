@@ -1367,8 +1367,10 @@
                             d.gifEl.style.left    = sx + 'px';
                             d.gifEl.style.top     = sy + 'px';
                             d.gifEl.style.opacity = fadeAlpha;
-                            d.gifEl.style.width   = '90px';
-                            d.gifEl.style.height  = '90px';
+                            const dist = camera.position.distanceTo(d.mesh.position);
+                            const s = Math.max(24, Math.min(160, 90 * (5 / Math.max(dist, 0.1)))) * eased;
+                            d.gifEl.style.width   = s + 'px';
+                            d.gifEl.style.height  = s + 'px';
                         }
                     }
                 } else {
@@ -1436,8 +1438,11 @@
                         d.gifEl.style.display = onScreen ? 'block' : 'none';
                         d.gifEl.style.left    = sx + 'px';
                         d.gifEl.style.top     = sy + 'px';
-                        d.gifEl.style.width   = '90px';
-                        d.gifEl.style.height  = '90px';
+                        // scale ตาม distance เหมือน 3D object
+                        const dist = camera.position.distanceTo(d.mesh.position);
+                        const s = Math.max(24, Math.min(160, 90 * (5 / Math.max(dist, 0.1))));
+                        d.gifEl.style.width   = s + 'px';
+                        d.gifEl.style.height  = s + 'px';
                         d.gifEl.style.opacity = fadeAlpha;
                     }
                 }
