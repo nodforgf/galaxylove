@@ -1217,9 +1217,9 @@
             experienceStarted = true;
             experienceStartMs = performance.now();
             startOverlay.classList.add('hidden');
-            // เล่นเพลงทันทีใน gesture context
+            // เพลงถูกเปิดแล้วตอนกดหัวใจครบ — ลองเปิดอีกครั้งเผื่อกรณีที่ยังไม่ได้เล่น
             const bgMusic = document.getElementById('backgroundMusic');
-            if (bgMusic) {
+            if (bgMusic && bgMusic.paused) {
                 bgMusic.volume = 0.5;
                 bgMusic.play().catch(() => {});
             }
@@ -1297,13 +1297,15 @@
                     clearInterval(holdTimer);
                     holdInstruction.textContent = "WARPING TO GALAXY! 💕";
                     
+                    // เปิดเพลงทันทีขณะยังอยู่ใน user gesture context
                     const bgMusic = document.getElementById('backgroundMusic');
                     if (bgMusic) {
+                        bgMusic.volume = 0.5;
                         bgMusic.play().catch(err => console.log("Music auto-play blocked:", err));
                     }
                     
                     setTimeout(() => {
-                        startExperience(); 
+                        startExperience();
                     }, 200);
                 }
             }, intervalTime);
