@@ -1267,9 +1267,28 @@
             heartRunner.style.top = targetY + 'px';
         }
 
+        // unlock audio สำหรับ iOS/Android — ต้องทำตรงใน user gesture event
+        let audioUnlocked = false;
+        function unlockAudio() {
+            if (audioUnlocked) return;
+            const bgMusic = document.getElementById('backgroundMusic');
+            if (!bgMusic) return;
+            // play แล้ว pause ทันที เพื่อ "unlock" audio context บน iOS
+            bgMusic.volume = 0;
+            bgMusic.play().then(() => {
+                bgMusic.pause();
+                bgMusic.currentTime = 0;
+                bgMusic.volume = 0.5;
+                audioUnlocked = true;
+            }).catch(() => {});
+        }
+
         function startHolding(e) {
             e.preventDefault();
             if (experienceStarted) return;
+
+            // unlock audio ทันทีที่นิ้วแตะ/เมาส์กด — ยังอยู่ใน gesture context พอดี
+            unlockAudio();
             
             clearInterval(holdTimer);
             holdInstruction.textContent = "CHARGING LOVE...";
@@ -1297,11 +1316,11 @@
                     clearInterval(holdTimer);
                     holdInstruction.textContent = "WARPING TO GALAXY! 💕";
                     
-                    // เปิดเพลงทันทีขณะยังอยู่ใน user gesture context
+                    // เล่นเพลง — audio ถูก unlock ไว้แล้วตอน touchstart/mousedown
                     const bgMusic = document.getElementById('backgroundMusic');
                     if (bgMusic) {
                         bgMusic.volume = 0.5;
-                        bgMusic.play().catch(err => console.log("Music auto-play blocked:", err));
+                        bgMusic.play().catch(err => console.log("Music play failed:", err));
                     }
                     
                     setTimeout(() => {
